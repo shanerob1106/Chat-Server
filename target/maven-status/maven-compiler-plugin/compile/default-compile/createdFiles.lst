@@ -1,0 +1,3 @@
+com\mycompany\chatserver\Server.class
+com\mycompany\chatserver\Client.class
+com\mycompany\chatserver\ClientHandler.class
