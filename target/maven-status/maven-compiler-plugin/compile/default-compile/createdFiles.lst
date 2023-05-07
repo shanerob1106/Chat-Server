@@ -1,3 +1,5 @@
+com\mycompany\chatserver\MessageReceiver.class
 com\mycompany\chatserver\Server.class
+com\mycompany\chatserver\ClientGui.class
 com\mycompany\chatserver\Client.class
 com\mycompany\chatserver\ClientHandler.class

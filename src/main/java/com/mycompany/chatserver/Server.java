@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 /**
  *
@@ -21,12 +24,29 @@ public class Server {
 
     private static ArrayList<ClientHandler> clientsList = new ArrayList<>();
 
+    public static String getLocalIPv4() throws SocketException {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface currentInterface = interfaces.nextElement();
+            Enumeration<InetAddress> addresses = currentInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress currentAddress = addresses.nextElement();
+                if (!currentAddress.isLoopbackAddress() && currentAddress.getAddress().length == 4) {
+                    return currentAddress.getHostAddress();
+                }
+            }
+        }
+        return null; // No valid IPv4 address found
+    }
+
     public static void main(String[] args) throws IOException {
         int portNumber = 8000;
-        InetAddress serverAddress = InetAddress.getByName("192.168.1.181");
+        String localIPv4 = getLocalIPv4();
+        InetAddress serverAddress = InetAddress.getByName(localIPv4);
 
         try (ServerSocket serverSocket = new ServerSocket(portNumber, 50, serverAddress)) {
             System.out.println("Server listening on port " + portNumber);
+            System.out.println("Server hosting on IP: " + localIPv4);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -43,6 +63,7 @@ public class Server {
 }
 
 class ClientHandler implements Runnable {
+
     private Socket clientSocket;
     private ArrayList<ClientHandler> clientsList;
     private PrintWriter out;
